@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, BatteryCharging, Zap } from 'lucide-react';
 
-const ChargingStationMap = () => {
-  const [stations, setStations] = useState([]);
+const ChargingStationMap = ({ stations }) => {
   const [selectedStation, setSelectedStation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [walletConnected, setWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
-  
-  // Mock data for demonstration
-  const mockStations = [
-    { id: '1', owner: 'GRxT...j28q', lat: 37.7749, lng: -122.4194, pricePerKwh: 0.12, available: true, powerOutput: 11, plugType: 'Type 2' },
-    { id: '2', owner: 'HJ8k...p9L2', lat: 37.7833, lng: -122.4167, pricePerKwh: 0.15, available: false, powerOutput: 22, plugType: 'CCS' },
-    { id: '3', owner: 'T5mP...r7Z3', lat: 37.7694, lng: -122.4862, pricePerKwh: 0.10, available: true, powerOutput: 7, plugType: 'Type 1' },
-  ];
-  
+  const [inputWalletAddress, setInputWalletAddress] = useState("");
+
   useEffect(() => {
     // Get user's location
     if (navigator.geolocation) {
@@ -32,12 +25,7 @@ const ChargingStationMap = () => {
       );
     }
     
-    // In a real app, you would fetch stations from your backend
-    // For now, we'll use mock data
-    setTimeout(() => {
-      setStations(mockStations);
-      setIsLoading(false);
-    }, 1000);
+    setIsLoading(false);
   }, []);
   
   const handleStationSelect = (station) => {
@@ -45,10 +33,12 @@ const ChargingStationMap = () => {
   };
   
   const handleConnectWallet = () => {
-    // In a real app, this would connect to a Solana wallet
-    // For demonstration, we'll just simulate it
-    setWalletConnected(true);
-    setWalletAddress("DLmj...78nK");
+    if (inputWalletAddress) {
+      setWalletConnected(true);
+      setWalletAddress(inputWalletAddress);
+    } else {
+      alert("Please enter a wallet address");
+    }
   };
   
   const handleBooking = async (stationId) => {
@@ -179,20 +169,35 @@ const ChargingStationMap = () => {
             <p>Find and book residential charging stations near you</p>
           </div>
           {!walletConnected ? (
-            <button 
-              onClick={handleConnectWallet}
-              style={{
-                backgroundColor: 'white',
-                color: '#2563eb',
-                padding: '0.5rem 1rem',
-                borderRadius: '0.5rem',
-                fontWeight: '500',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              Connect Wallet
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <input 
+                type="text" 
+                value={inputWalletAddress} 
+                onChange={(e) => setInputWalletAddress(e.target.value)} 
+                placeholder="Enter Wallet Address"
+                style={{
+                  marginRight: '0.5rem',
+                  padding: '0.5rem',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #e5e7eb',
+                  color: 'black' // Ensure the text color is black
+                }}
+              />
+              <button 
+                onClick={handleConnectWallet}
+                style={{
+                  backgroundColor: 'white',
+                  color: '#2563eb',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '0.5rem',
+                  fontWeight: '500',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                Connect Wallet
+              </button>
+            </div>
           ) : (
             <div style={{
               backgroundColor: '#1e40af',
