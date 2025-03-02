@@ -89,7 +89,7 @@ function App() {
               )}
             </>
           } />
-          <Route path="/transaction/:stationId" element={<TransactionPage />} />
+          <Route path="/transaction/:stationId" element={<TransactionPage stations={stations} />} />
         </Routes>
       </main>
       <footer style={{ backgroundColor: '#f3f4f6', padding: '1rem', marginTop: '2rem', textAlign: 'center', color: '#4b5563' }}>
