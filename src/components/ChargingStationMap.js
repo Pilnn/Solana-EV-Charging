@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, BatteryCharging, Zap } from 'lucide-react';
 
 const ChargingStationMap = ({ stations }) => {
@@ -8,6 +9,7 @@ const ChargingStationMap = ({ stations }) => {
   const [walletConnected, setWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
   const [inputWalletAddress, setInputWalletAddress] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Get user's location
@@ -47,8 +49,7 @@ const ChargingStationMap = ({ stations }) => {
       return;
     }
     
-    // This would call your backend service which interacts with Solana
-    alert(`Booking station ${stationId}. In a real app, this would create a transaction.`);
+    navigate(`/transaction/${stationId}`);
   };
   
   // Render station markers with inline styles instead of Tailwind
