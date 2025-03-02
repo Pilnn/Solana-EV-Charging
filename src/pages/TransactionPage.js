@@ -8,36 +8,51 @@ const TransactionPage = ({ stations }) => {
   const { stationId } = useParams(); // Get the station ID from URL
   const { connection } = useConnection();
   const { publicKey, sendTransaction, connect, connected } = useWallet();
-  const [amount, setAmount] = useState(0.1); // Example amount to transfer
+  const [amount, setAmount] = useState(0.1); // Default transfer amount in SOL
 
+  // Find the station and its owner's public key
   const station = stations.find(station => station.id === parseInt(stationId));
   const toPublicKey = station ? new PublicKey(station.owner) : null;
 
   const handleTransaction = async () => {
+    // Ensure wallet is connected
     if (!connected) {
       await connect();
     }
-
+    if (!publicKey) {
+      alert("Wallet is not connected properly.");
+      return;
+    }
     if (!toPublicKey) {
       alert('Invalid station owner address');
       return;
     }
 
     try {
+      // Convert the input amount to a number and calculate lamports
+      const parsedAmount = parseFloat(amount);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+      const lamports = parsedAmount * LAMPORTS_PER_SOL;
+
+      // Build and send the transaction
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: toPublicKey,
-          lamports: amount * LAMPORTS_PER_SOL,
+          lamports: lamports,
         })
       );
 
       const signature = await sendTransaction(transaction, connection);
+      // Confirm the transaction
       await connection.confirmTransaction(signature, 'confirmed');
       alert(`Transaction successful! Signature: ${signature}`);
     } catch (error) {
       console.error('Transaction failed', error);
-      alert('Transaction failed');
+      alert(`Transaction failed: ${error.message || error}`);
     }
   };
 
